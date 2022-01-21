@@ -1,16 +1,14 @@
 const router = require('express').Router();
+const { verifyTokenAndAuthorization } = require('../middlewares/verifyToken');
+const { getUser, updateUser, deleteUser } = require('../controllers/user');
 
-router.get('/', (req, res) => {
-  res.status(200).send('users...');
-});
+// GET USER
+router.get('/:id', verifyTokenAndAuthorization, getUser);
 
-router.post('/', (req, res) => {
-  const { email, password } = req.body;
+// UPDATE USER
+router.put('/:id', verifyTokenAndAuthorization, updateUser);
 
-  res.status(200).json({
-    email,
-    password,
-  });
-});
+// DELETE USER
+router.delete('/:id', verifyTokenAndAuthorization, deleteUser);
 
 module.exports = router;
