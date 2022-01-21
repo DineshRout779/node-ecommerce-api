@@ -1,5 +1,5 @@
-const User = require('../models/User');
-const bcrypt = require();
+const User = require('../model/User');
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 exports.register = async (req, res) => {
@@ -43,16 +43,15 @@ exports.register = async (req, res) => {
   }
 };
 
-exports.login = async (req, res, next) => {
+exports.login = async (req, res) => {
   const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({
-      success: false,
-      error: 'Please provide email and password!',
-    });
-  }
   try {
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        error: 'Please provide email and password!',
+      });
+    }
     const user = await User.findOne({ email });
 
     if (!user) {
@@ -82,12 +81,15 @@ exports.login = async (req, res, next) => {
 
 const generateToken = (user, statusCode, res) => {
   const payload = {
-    user: {
-      _id: user._id,
-    },
+    _id: user._id,
+    isAdmin: user.isAdmin,
   };
-  const token = jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: '100min',
+
+  const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: '3d',
   });
-  res.status(statusCode).json({ success: true, token, user });
+
+  const { password, ...others } = user._doc;
+
+  res.status(statusCode).json({ accessToken, ...others });
 };
