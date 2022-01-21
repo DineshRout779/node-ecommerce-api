@@ -1,9 +1,20 @@
 const router = require('express').Router();
-const { verifyTokenAndAuthorization } = require('../middlewares/verifyToken');
-const { getUser, updateUser, deleteUser } = require('../controllers/user');
+const {
+  verifyTokenAndAuthorization,
+  verifyTokenAndAdmin,
+} = require('../middlewares/verifyToken');
+const {
+  getUser,
+  updateUser,
+  deleteUser,
+  getAllUsers,
+} = require('../controllers/user');
 
 // GET USER
-router.get('/:id', verifyTokenAndAuthorization, getUser);
+router.get('/:id', verifyTokenAndAdmin, getUser);
+
+// GETALL USERS
+router.get('/', verifyTokenAndAdmin, getAllUsers);
 
 // UPDATE USER
 router.put('/:id', verifyTokenAndAuthorization, updateUser);
